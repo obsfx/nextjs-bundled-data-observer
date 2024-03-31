@@ -154,7 +154,7 @@ export function Popup() {
           style={{
             opacity: searchPending ? 0.5 : 1,
           }}>
-          <div className="text-gray-500 text-[10px] leading-none pb-2 text-base flex items-center justify-between">
+          <div className="text-gray-500 text-[10px] leading-none pb-2 flex items-center justify-between">
             Object List{' '}
             <span className="text-gray-400">
               NextJS 13+ Bundled Data Observer

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "NextJS 13+ Bundled Data Observer",
+  "name": "NextJS 13+ App Router Bundled Data Observer",
   "version": "0.0.1",
-  "description": "A chrome extension to observe bundled data to client from a NextJS 13+ application.",
+  "description": "A chrome extension to observe bundled data to client from NextJS 13+ applications use App Router.",
   "permissions": ["activeTab", "storage", "scripting"],
   "action": {
     "default_popup": "popup.html"

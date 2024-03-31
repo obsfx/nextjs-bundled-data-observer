@@ -39,6 +39,9 @@ export function Popup() {
         .map(script => {
           return script.replace(/<script\b[^>]*>/, '').replace(/<\/script>/, '');
         })
+        .filter(script => {
+          return script.includes('__next_f');
+        })
         .join('');
 
       const result = await chrome.storage.local.get([host]);
@@ -158,12 +161,12 @@ export function Popup() {
 
     if (needsRefreshPage) {
       return (
-        <div className="absolute top-0 left-0 right-0 bg-neutral-100 text-neutral-500 p-2 text-center flex flex-col gap-2 items-center justify-center w-full h-full text-xs">
-          Please refresh the page to load updated data.
+        <div className="absolute top-0 left-0 right-0 bg-neutral-100 text-neutral-500 p-2 text-center flex flex-col gap-4 items-center justify-center w-full h-full text-xs">
+          Page location has changed. Please refresh the page to load updated data.
           <button
             onClick={refreshAndClearStoredData}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md ml-2 hover:bg-blue-600">
-            Refresh & Load Data
+            className="bg-blue-500 text-white px-4 py-2 rounded shadow ml-2 hover:bg-blue-600">
+            Refresh & Load Updated Data
           </button>
         </div>
       );
@@ -184,24 +187,21 @@ export function Popup() {
           style={{
             opacity: searchPending ? 0.5 : 1,
           }}>
-          <div className="text-gray-500 text-[10px] leading-none pb-2 flex items-center justify-between">
-            Object List ({extractedJsonObjects.length})
-            <span className="text-gray-400">
-              <img src="/icon-128.png" className="w-4 h-4 inline-block mr-1" alt="logo" />
-              NextJS 13+ Bundled Data Observer
-              <a
-                target="_blank"
-                href="https://github.com/obsfx/nextjs-bundled-data-observer"
-                rel="noreferrer"
-                className="text-blue-500 hover:underline text-[9px] mx-1">
-                github.com/obsfx/nextjs-bundled-data-observer
-              </a>
-            </span>
+          <div className="text-gray-500 text-[10px] leading-none pb-2 flex items-center justify-between gap-1">
+            <div className="flex-shrink-0">Object List ({extractedJsonObjects.length})</div>
+
+            <div className="flex items-start text-gray-400 gap-1">
+              <button
+                onClick={refreshAndClearStoredData}
+                className="bg-blue-500 text-white px-4 py-2 rounded shadow-sm ml-2 hover:bg-blue-600">
+                Refresh & Load Updated Data
+              </button>
+            </div>
           </div>
           {renderList()}
         </div>
 
-        <div className="flex items-center justify-between gap-8 py-2 pl-2 pr-4 relative border-t border-gray-100">
+        <div className="flex flex-col gap-2 py-2 pl-2 pr-4 relative border-t border-gray-100">
           <div className="flex flex-1 items-center relative border border-stone-200 rounded-md text-gray-400">
             <Search size={14} className="mx-1 absolute" />
             <input
@@ -229,6 +229,20 @@ export function Popup() {
                 <X size={12} />
               </button>
             )}
+          </div>
+
+          <div className="flex items-start gap-1 text-[10px] leading-none text-gray-500">
+            <img src="/icon-128.png" className="w-4 h-4 inline-block" alt="logo" />
+            <div className="flex flex-col gap-0.5">
+              <div className="flex items-center gap-1">NextJS 13+ App Router Bundled Data Observer</div>
+              <a
+                target="_blank"
+                href="https://github.com/obsfx/nextjs-bundled-data-observer"
+                rel="noreferrer"
+                className="text-blue-500 hover:underline">
+                github.com/obsfx/nextjs-bundled-data-observer
+              </a>
+            </div>
           </div>
         </div>
       </div>

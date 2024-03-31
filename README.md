@@ -2,4 +2,4 @@
 
 # NextJS 13+ Bundled Data Observer Chrome Extension
 
-🔍 A chrome extension to observe bundled data to the client from a NextJS application. You need NextJS `13` or higher
+🔍 A chrome extension to observe bundled data to the client from a NextJS application. You need NextJS `13` or higher.

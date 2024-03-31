@@ -4,5 +4,8 @@
 # build
 /dist
 
+# zip files
+*.zip
+
 # etc
 .DS_Store

@@ -25,7 +25,7 @@ export const extractJson = (
           const parsed = JSON.parse(stringBuffer);
           dataArr.push(parsed);
         } catch (error) {
-          // console.log('NextObject parse error', error, stringBuffer);
+          //console.log('NextObject parse error', error, stringBuffer);
         } finally {
           stringBuffer = '';
         }

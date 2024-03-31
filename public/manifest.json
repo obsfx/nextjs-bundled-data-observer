@@ -1,22 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "nextjs-bundled-data-observer",
+  "name": "NextJS 13+ Bundled Data Observer",
   "version": "0.0.1",
   "description": "A chrome extension to observe bundled data to client from a NextJS 13+ application.",
-  "permissions": ["background", "activeTab", "scripting", "tabs", "storage"],
-  "background": {
-    "service_worker": "background/index.js",
-    "type": "module"
-  },
+  "permissions": ["activeTab", "storage", "scripting"],
   "action": {
     "default_popup": "popup.html"
   },
-  "content_scripts": [
-    {
-      "matches": ["http://*/*", "https://*/*", "<all_urls>"],
-      "js": ["content/index.js"]
-    }
-  ],
   "icons": {
     "32": "icon-128.png",
     "128": "icon-128.png"

@@ -17,20 +17,44 @@ export function Popup() {
   useEffect(() => {
     const getNextObject = async () => {
       const currentTab = await getCurrentWindowTab();
-      const urlObject = new URL(currentTab?.url || '');
+
+      const [scriptingResult] = await chrome.scripting.executeScript({
+        target: { tabId: currentTab?.id || 0 },
+        func: () => {
+          const windowLocation = window.location.href;
+          return [windowLocation, document.body.innerHTML];
+        },
+        args: [],
+        world: 'MAIN',
+      });
+
+      const [windowLocation, html] = scriptingResult.result as [string, string];
+
+      const urlObject = new URL(windowLocation);
       const host = urlObject.host;
-      const pathame = urlObject.pathname;
+      const pathname = urlObject.pathname;
+
+      const scriptContents = html
+        .match(/<script\b[^>]*>([\s\S]*?)<\/script>/gm)
+        .map(script => {
+          return script.replace(/<script\b[^>]*>/, '').replace(/<\/script>/, '');
+        })
+        .join('');
+
       const result = await chrome.storage.local.get([host]);
 
       if (!result[host]) {
-        setLoading(false);
-        return;
+        result[host] = {
+          data: [],
+          pathname,
+          isParsed: false,
+        };
       }
 
       const resultData = result[host]['data'];
       const resultPathname = result[host]['pathname'];
 
-      if (pathame !== resultPathname) {
+      if (pathname !== resultPathname) {
         setNeedsRefreshPage(true);
         setLoading(false);
         return;
@@ -44,7 +68,7 @@ export function Popup() {
         return;
       }
 
-      const nextObjectPayload = resultData;
+      const nextObjectPayload = scriptContents.replace(/(?:\\(.))/g, '$1');
       const extractedJsonObjects = extractJson(nextObjectPayload);
       for (let i = 0; i < extractedJsonObjects.length; i++) {
         extractedJsonObjects[i] = resolveRefOfAnObject(nextObjectPayload, extractedJsonObjects[i]);
@@ -55,6 +79,7 @@ export function Popup() {
         [host]: {
           ...result[host],
           data: extractedJsonObjects,
+          pathname: pathname,
           isParsed: true,
         },
       });
@@ -62,6 +87,15 @@ export function Popup() {
 
     getNextObject();
   }, []);
+
+  const refreshAndClearStoredData = async () => {
+    const currentTab = await getCurrentWindowTab();
+    const urlObject = new URL(currentTab?.url || '');
+    const host = urlObject.host;
+    chrome.storage.local.remove([host]);
+    window.close();
+    chrome.tabs.reload();
+  };
 
   useEffect(() => {
     setSearchPending(false);
@@ -116,7 +150,7 @@ export function Popup() {
   const renderBody = () => {
     if (loading) {
       return (
-        <div className="absolute top-0 left-0 right-0 bg-neutral-100 text-neutral-500 p-2 text-center flex items-center justify-center w-full h-full text-base">
+        <div className="absolute top-0 left-0 right-0 bg-neutral-100 text-neutral-500 p-2 text-center flex items-center justify-center w-full h-full text-xs">
           Loading NextJS data
         </div>
       );
@@ -124,16 +158,12 @@ export function Popup() {
 
     if (needsRefreshPage) {
       return (
-        <div className="absolute top-0 left-0 right-0 bg-neutral-100 text-neutral-500 p-2 text-center flex flex-col gap-1 items-center justify-center w-full h-full text-base">
+        <div className="absolute top-0 left-0 right-0 bg-neutral-100 text-neutral-500 p-2 text-center flex flex-col gap-2 items-center justify-center w-full h-full text-xs">
           Please refresh the page to load updated data.
           <button
-            onClick={() => {
-              // close the popup
-              window.close();
-              chrome.tabs.reload();
-            }}
-            className="bg-blue-500 text-white px-2 py-1 rounded-md ml-2 hover:bg-blue-600">
-            Refresh
+            onClick={refreshAndClearStoredData}
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md ml-2 hover:bg-blue-600">
+            Refresh & Load Data
           </button>
         </div>
       );
@@ -141,7 +171,7 @@ export function Popup() {
 
     if (!loading && extractedJsonObjects.length === 0) {
       return (
-        <div className="absolute top-0 left-0 right-0 bg-neutral-100 text-neutral-500 p-2 text-center flex items-center justify-center w-full h-full text-base">
+        <div className="absolute top-0 left-0 right-0 bg-neutral-100 text-neutral-500 p-2 text-center flex items-center justify-center w-full h-full text-sm">
           No data found.
         </div>
       );
@@ -155,8 +185,9 @@ export function Popup() {
             opacity: searchPending ? 0.5 : 1,
           }}>
           <div className="text-gray-500 text-[10px] leading-none pb-2 flex items-center justify-between">
-            Object List{' '}
+            Object List ({extractedJsonObjects.length})
             <span className="text-gray-400">
+              <img src="/icon-128.png" className="w-4 h-4 inline-block mr-1" alt="logo" />
               NextJS 13+ Bundled Data Observer
               <a
                 target="_blank"

@@ -47,12 +47,7 @@ const esbuildEnv = Object.entries(process.env).reduce((acc, [key, value]) => {
 }, {});
 
 export const esbuildCtx = await esbuild.context({
-  entryPoints: [
-    resolve(srcDir, 'background/index.ts'),
-    resolve(srcDir, 'content/index.ts'),
-    resolve(srcDir, 'content-inject/index.ts'),
-    resolve(srcDir, 'popup/index.tsx'),
-  ],
+  entryPoints: [resolve(srcDir, 'popup/index.tsx')],
   jsx: 'automatic',
   bundle: true,
   minify: true,
@@ -61,6 +56,7 @@ export const esbuildCtx = await esbuild.context({
     '.tsx': 'tsx',
   },
   outdir: distDir,
+  outbase: srcDir,
   platform: 'browser',
   target: ['es2020', 'chrome60', 'edge18', 'firefox60', 'safari11'],
   sourcemap: !isProduction,

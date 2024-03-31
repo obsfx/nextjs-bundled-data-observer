@@ -1,5 +1,5 @@
-![Group 3](https://github.com/obsfx/nextjs-bundled-data-observer/assets/13767783/9273bd27-72ee-4dc7-b93c-e62f45aa103a)
-
 # NextJS 13+ Bundled Data Observer Chrome Extension
 
-<img width="1326" alt="Screenshot 2024-03-31 at 21 17 05" src="https://github.com/obsfx/nextjs-bundled-data-observer/assets/13767783/5724ba24-79a1-4f49-a224-2b3070921fa8">
+🔍 A chrome extension to observe bundled data to the client for NextJS applications. It is compatible with NextJS version `13+` applications that use `App Router`.
+
+<img width="1582" alt="Screenshot 2024-04-01 at 02 21 28" src="https://github.com/obsfx/nextjs-bundled-data-observer/assets/13767783/b89bb5e4-58ef-4a21-a553-a199852e92f5">
